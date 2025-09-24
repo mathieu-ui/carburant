@@ -74,14 +74,6 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
-        .btn-refresh {
-            border-radius: 50px;
-            background: #28a745;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-        }
-        
         /* Section recherche avancée */
         .advanced-search {
             background: #ffffff;
@@ -397,19 +389,6 @@
         .date-old { color: #fd7e14; }
         .date-stale { color: #dc3545; }
         
-        .data-status {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            z-index: 1000;
-        }
-        
         .legend {
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
             border: 1px solid #dee2e6;
@@ -653,69 +632,12 @@
 
             <!-- Zone de résultats -->
             <div id="resultats"></div>
-            
-            <!-- Bouton refresh -->
-            <div class="text-center mb-4">
-                <button class="btn btn-refresh" onclick="actualiserDonnees()">
-                    <i class="fas fa-sync-alt"></i> Actualiser les données
-                </button>
-            </div>
         </div>
-    </div>
-    
-    <!-- Statut des données en bas -->
-    <div class="data-status" id="dataStatus">
-        <span id="statusText">Chargement des données...</span>
     </div>
 
     <script>
         let stationsData = [];
         let filteredStations = [];
-
-        // Vérification du statut au chargement
-        window.onload = function() {
-            verifierStatut();
-            setInterval(verifierStatut, 30000); // Vérifier toutes les 30 secondes
-        };
-
-        function verifierStatut() {
-            fetch('/api/status')
-                .then(response => response.json())
-                .then(data => {
-                    updateDataStatus(data);
-                })
-                .catch(error => {
-                    document.getElementById('statusText').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur de connexion';
-                });
-        }
-        
-        function updateDataStatus(data) {
-            const statusElement = document.getElementById('statusText');
-            const nbStations = data.nb_stations || 0;
-            const lastUpdate = data.last_update;
-            
-            let statusClass = 'data-fresh';
-            let ageText = '';
-            
-            if (lastUpdate) {
-                const updateTime = new Date(lastUpdate);
-                const now = new Date();
-                const diffHours = Math.floor((now - updateTime) / (1000 * 60 * 60));
-                
-                if (diffHours >= 168) { // 1 semaine
-                    statusClass = 'data-stale';
-                    ageText = ` (${Math.floor(diffHours / 24)} jours)`;
-                } else if (diffHours >= 24) { // 24 heures
-                    statusClass = 'data-old';
-                    ageText = ` (${diffHours}h)`;
-                } else {
-                    ageText = ` (${diffHours}h)`;
-                }
-            }
-            
-            statusElement.className = statusClass;
-            statusElement.innerHTML = `<i class="fas fa-database"></i> Les stations ont bien été chargées`;
-        }
 
         function toggleAdvancedSearch() {
             const advanced = document.getElementById('advancedSearch');
@@ -1143,40 +1065,7 @@
             appliquerFiltres();
         }
 
-        function actualiserDonnees() {
-            const statusElement = document.getElementById('statusText');
-            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualisation en cours...';
-            
-            fetch('/api/refresh')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Erreur HTTP: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.message) {
-                        // Succès : l'actualisation a été lancée
-                        console.log('Actualisation lancée:', data.message);
-                        // Vérifier le statut périodiquement pour suivre l'actualisation
-                        verifierStatut();
-                        
-                        // Relancer la recherche si une ville est saisie
-                        const ville = document.getElementById('villeInput').value.trim();
-                        if (ville) {
-                            setTimeout(() => rechercherStations(), 1000); // Attendre un peu avant de relancer
-                        }
-                    } else if (data.error) {
-                        throw new Error(data.error);
-                    } else {
-                        throw new Error('Réponse inattendue du serveur');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur lors de l\'actualisation:', error);
-                    statusElement.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Erreur: ${error.message}`;
-                });
-        }
+
     </script>
 </body>
 </html>

@@ -23,16 +23,14 @@ CORS(app)
 # Variables globales pour stocker les données
 stations_data = []
 data_loaded = False
-loading_status = "Initialisation..."
 last_update = None
 
 
 def download_and_parse_data():
     """Télécharge et analyse les données XML"""
-    global stations_data, data_loaded, loading_status, last_update
+    global stations_data, data_loaded, last_update
     
     try:
-        loading_status = "Téléchargement des données..."
         print("📥 Téléchargement des données...")
         
         # URL des données
@@ -64,7 +62,6 @@ def download_and_parse_data():
                     raise Exception(f"Impossible de télécharger après {max_retries} tentatives: {e}")
                 time.sleep(2)  # Attendre 2 secondes avant de réessayer
         
-        loading_status = "Extraction et analyse des données..."
         print("📦 Extraction et analyse des données...")
         
         # Extraire le fichier XML du ZIP
@@ -96,7 +93,6 @@ def download_and_parse_data():
             raise Exception("Le fichier XML est vide")
         
         # Parser le XML
-        loading_status = "Analyse du fichier XML..."
         print("🔍 Analyse du fichier XML...")
         
         try:
@@ -120,7 +116,6 @@ def download_and_parse_data():
             # Afficher la progression tous les 1000 éléments
             if i > 0 and i % 1000 == 0:
                 print(f"⏳ Traitement en cours... {i}/{len(pdv_elements)} stations ({i*100//len(pdv_elements)}%)")
-                loading_status = f"Traitement des stations... {i}/{len(pdv_elements)} ({i*100//len(pdv_elements)}%)"
             
             station = {
                 'id': pdv.get('id', ''),
@@ -268,27 +263,22 @@ def download_and_parse_data():
         stations_data = new_stations
         data_loaded = True
         last_update = datetime.now()
-        loading_status = f"Données chargées avec succès - {len(stations_data)} stations"
         
         print(f"✅ {len(stations_data)} stations chargées avec succès!")
         
     except requests.RequestException as e:
-        loading_status = f"Erreur de téléchargement: {str(e)}"
         print(f"❌ Erreur de téléchargement: {str(e)}")
         print("🌐 Vérifiez votre connexion internet")
         data_loaded = False
     except zipfile.BadZipFile as e:
-        loading_status = f"Erreur de fichier ZIP corrompu: {str(e)}"
         print(f"❌ Erreur de ZIP: {str(e)}")
         print("📦 Le fichier téléchargé n'est pas un ZIP valide")
         data_loaded = False
     except ET.ParseError as e:
-        loading_status = f"Erreur de parsing XML: {str(e)}"
         print(f"❌ Erreur XML: {str(e)}")
         print("📄 Le fichier XML est malformé ou corrompu")
         data_loaded = False
     except Exception as e:
-        loading_status = f"Erreur inattendue: {str(e)}"
         print(f"❌ Erreur inattendue: {str(e)}")
         print(f"📋 Type d'erreur: {type(e).__name__}")
         import traceback
@@ -333,17 +323,6 @@ def get_latest_update_date(prix_dict):
 def index():
     """Page principale"""
     return render_template('index.html')
-
-
-@app.route('/api/status')
-def api_status():
-    """Status de l'application"""
-    return jsonify({
-        'data_loaded': data_loaded,
-        'loading_status': loading_status,
-        'nb_stations': len(stations_data) if data_loaded else 0,
-        'last_update': last_update.strftime('%d/%m/%Y à %H:%M:%S') if last_update else None
-    })
 
 
 @app.route('/api/search')
@@ -433,33 +412,30 @@ def api_search():
     })
 
 
-@app.route('/api/refresh')
-def api_refresh():
-    """Actualiser les données"""
-    global data_loaded, loading_status
-    
-    if not data_loaded:
-        return jsonify({'error': 'Chargement déjà en cours'}), 400
-    
-    # Lancer le rechargement en arrière-plan
-    data_loaded = False
-    loading_status = "Actualisation en cours..."
-    
-    thread = threading.Thread(target=download_and_parse_data)
-    thread.daemon = True
-    thread.start()
-    
-    return jsonify({'message': 'Actualisation lancée'})
+def auto_refresh_data():
+    """Actualise automatiquement les données toutes les heures"""
+    while True:
+        time.sleep(3600)  # Attendre 1 heure (3600 secondes)
+        if data_loaded:  # Ne lancer une nouvelle actualisation que si les données précédentes sont chargées
+            print("🔄 Actualisation automatique des données...")
+            download_and_parse_data()
 
 
 def init_data():
     """Initialise les données au démarrage"""
     print("🚀 Démarrage de l'application Prix Carburants Web")
     
-    # Lancer le chargement des données en arrière-plan
-    thread = threading.Thread(target=download_and_parse_data)
-    thread.daemon = True
-    thread.start()
+    # Lancer le chargement initial des données en arrière-plan
+    initial_thread = threading.Thread(target=download_and_parse_data)
+    initial_thread.daemon = True
+    initial_thread.start()
+    
+    # Lancer le thread d'actualisation automatique toutes les heures
+    auto_refresh_thread = threading.Thread(target=auto_refresh_data)
+    auto_refresh_thread.daemon = True
+    auto_refresh_thread.start()
+    
+    print("⏰ Actualisation automatique programmée toutes les heures")
 
 
 if __name__ == '__main__':
