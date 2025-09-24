@@ -407,8 +407,24 @@ def api_search():
             }
             results.append(station_data)
     
-    # Trier par ville puis par adresse
-    results.sort(key=lambda x: (x['ville'], x['adresse']))
+    # Trier par date de mise à jour (plus récent en premier), puis par ville et adresse
+    def get_sort_key(station):
+        # Convertir la date de mise à jour en timestamp pour le tri
+        if station['derniere_maj'] and station['derniere_maj'] != "Non renseigné":
+            try:
+                # Parse la date au format "dd/mm/yyyy à hh:mm"
+                date_str = station['derniere_maj']
+                date_obj = datetime.strptime(date_str, '%d/%m/%Y à %H:%M')
+                # Retourner un timestamp négatif pour avoir les plus récents en premier
+                return (-date_obj.timestamp(), station['ville'], station['adresse'])
+            except ValueError:
+                # Si le parsing échoue, mettre à la fin
+                return (float('inf'), station['ville'], station['adresse'])
+        else:
+            # Stations sans date de mise à jour à la fin
+            return (float('inf'), station['ville'], station['adresse'])
+    
+    results.sort(key=get_sort_key)
     
     return jsonify({
         'stations': results,
