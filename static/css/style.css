@@ -1,0 +1,521 @@
+/* Styles CSS pour l'application Prix Carburants */
+
+/* Variables CSS pour une maintenance plus facile */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --success-color: #28a745;
+    --warning-color: #fd7e14;
+    --danger-color: #dc3545;
+    --info-color: #2196f3;
+    --light-color: #f8f9fa;
+    --dark-color: #2c3e50;
+    --border-radius: 10px;
+    --shadow: 0 5px 15px rgba(0,0,0,0.08);
+    --transition: all 0.3s ease;
+}
+
+/* Styles de base */
+body {
+    background: var(--primary-gradient);
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+}
+
+.main-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    margin: 20px auto;
+    padding: 30px;
+    max-width: 1200px;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--dark-color);
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Zone de recherche */
+.search-container {
+    background: var(--light-color);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 2px solid #e9ecef;
+}
+
+.search-input {
+    border-radius: 50px;
+    border: 2px solid #dee2e6;
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    transition: var(--transition);
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-search {
+    border-radius: 50px;
+    padding: 12px 25px;
+    font-weight: bold;
+    background: var(--primary-gradient);
+    border: none;
+    transition: var(--transition);
+}
+
+.btn-search:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Recherche avancée */
+.advanced-search {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: none;
+}
+
+.advanced-toggle {
+    cursor: pointer;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.advanced-toggle:hover {
+    text-decoration: underline;
+}
+
+/* Checkboxes pour carburants */
+.fuel-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 10px;
+    background: var(--light-color);
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.fuel-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.fuel-checkbox:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
+}
+
+.fuel-checkbox input[type="checkbox"] {
+    transform: scale(1.1);
+}
+
+.fuel-checkbox input[type="checkbox"]:checked + label {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Zone de résultats */
+.results-info {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
+    border-left: 4px solid var(--info-color);
+    padding: 18px;
+    border-radius: var(--border-radius);
+    margin-bottom: 25px;
+    font-weight: 500;
+    font-size: 1.05rem;
+    border: 1px solid #bbdefb;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+}
+
+.results-info i {
+    color: var(--info-color);
+    margin-right: 8px;
+}
+
+/* Cartes de stations */
+.station-card {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    transition: var(--transition);
+    border: 1px solid #e9ecef;
+}
+
+.station-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.station-header {
+    background: linear-gradient(45deg, var(--light-color), #e9ecef);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.station-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--dark-color);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.station-subtitle {
+    color: #6c757d;
+    font-size: 0.95rem;
+    margin: 8px 0 0 0;
+    line-height: 1.4;
+}
+
+.station-body {
+    padding: 20px;
+}
+
+/* Grille des prix */
+.prix-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.prix-card {
+    background: var(--light-color);
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+}
+
+.prix-card:hover {
+    background: #e3f2fd;
+    border-color: var(--info-color);
+}
+
+.prix-type {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.prix-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--dark-color);
+    display: flex;
+    align-items: baseline;
+}
+
+.prix-value::after {
+    content: '€';
+    font-size: 0.8em;
+    margin-left: 2px;
+    color: #6c757d;
+}
+
+/* Services */
+.services {
+    background: #f1f3f4;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.services-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.service-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
+    color: #1565c0;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    margin: 3px;
+    border: 1px solid #bbdefb;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.service-tag:hover {
+    background: linear-gradient(135deg, #bbdefb 0%, #e3f2fd 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(21, 101, 192, 0.2);
+}
+
+/* Horaires */
+.horaires {
+    font-size: 0.9rem;
+    color: #495057;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--light-color) 0%, #ffffff 100%);
+    border-radius: 8px;
+    border-left: 4px solid var(--success-color);
+    border: 1px solid #e9ecef;
+    position: relative;
+    padding-left: 35px;
+}
+
+.horaires::before {
+    content: '🕐';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 1em;
+}
+
+/* États de chargement et d'erreur */
+.loading {
+    text-align: center;
+    padding: 50px;
+    color: #6c757d;
+    background: linear-gradient(135deg, var(--light-color) 0%, #ffffff 100%);
+    border-radius: 15px;
+    border: 2px dashed #dee2e6;
+    margin: 20px 0;
+}
+
+.loading i {
+    font-size: 3rem;
+    animation: spin 1s linear infinite;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    display: block;
+}
+
+.loading p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.no-results {
+    text-align: center;
+    padding: 50px;
+    color: #6c757d;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+    border-radius: 15px;
+    border: 2px dashed #ffcc80;
+    margin: 20px 0;
+}
+
+.no-results i {
+    font-size: 3rem;
+    color: #ff9800;
+    margin-bottom: 15px;
+    display: block;
+}
+
+/* Indicateurs de fraîcheur des données */
+.data-fresh { 
+    color: var(--success-color);
+    font-weight: bold;
+}
+.data-old { 
+    color: var(--warning-color);
+    font-weight: bold;
+}
+.data-stale { 
+    color: var(--danger-color);
+    font-weight: bold;
+}
+
+/* Couleurs pour les prix selon la fraîcheur */
+.prix-card.fresh {
+    border-left: 4px solid var(--success-color);
+}
+.prix-card.fresh .prix-value {
+    color: var(--success-color);
+}
+
+.prix-card.old {
+    border-left: 4px solid var(--warning-color);
+}
+.prix-card.old .prix-value {
+    color: var(--warning-color);
+}
+
+.prix-card.stale {
+    border-left: 4px solid var(--danger-color);
+}
+.prix-card.stale .prix-value {
+    color: var(--danger-color);
+}
+
+/* Dates colorées */
+.date-fresh { color: var(--success-color); }
+.date-old { color: var(--warning-color); }
+.date-stale { color: var(--danger-color); }
+
+/* Légende */
+.legend {
+    background: linear-gradient(135deg, var(--light-color) 0%, #ffffff 100%);
+    border: 1px solid #dee2e6;
+    border-radius: var(--border-radius);
+    padding: 18px;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.legend h6 {
+    margin-bottom: 12px;
+    color: #495057;
+    font-weight: 600;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 5px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 8px;
+    border: 1px solid #ccc;
+}
+
+.legend-fresh { background-color: var(--success-color); }
+.legend-old { background-color: var(--warning-color); }
+.legend-stale { background-color: var(--danger-color); }
+
+/* Liens Google Maps */
+.station-title-link {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.station-title-link:hover {
+    color: #4285f4;
+    text-decoration: none;
+}
+
+.station-title-link:hover .maps-icon {
+    transform: scale(1.2);
+    color: #4285f4;
+}
+
+.maps-icon {
+    color: #34a853;
+    transition: var(--transition);
+    font-size: 1.1em;
+}
+
+.address-link {
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.address-link:hover {
+    color: #4285f4;
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .search-container {
+        padding: 20px;
+    }
+    
+    .fuel-checkboxes {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .fuel-checkbox {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .prix-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 8px;
+    }
+    
+    .station-card {
+        margin-bottom: 15px;
+    }
+    
+    .station-header {
+        padding: 12px 15px;
+    }
+    
+    .station-body {
+        padding: 15px;
+    }
+}
