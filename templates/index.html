@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prix des Carburants en France</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin: 20px auto;
+            padding: 30px;
+            max-width: 1200px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .search-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .search-input {
+            border-radius: 50px;
+            border: 2px solid #dee2e6;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-search {
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-refresh {
+            border-radius: 50px;
+            background: #28a745;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+        }
+        
+        /* Section recherche avancée */
+        .advanced-search {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: none;
+        }
+        
+        .advanced-toggle {
+            cursor: pointer;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .advanced-toggle:hover {
+            text-decoration: underline;
+        }
+        
+        /* Checkboxes pour carburants multiples */
+        .fuel-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .fuel-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+        }
+        
+        .fuel-checkbox:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .fuel-checkbox input[type="checkbox"] {
+            transform: scale(1.1);
+        }
+        
+        .fuel-checkbox input[type="checkbox"]:checked + label {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .results-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
+            border-left: 4px solid #2196f3;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            font-size: 1.05rem;
+            border: 1px solid #bbdefb;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+        }
+        
+        .results-info i {
+            color: #2196f3;
+            margin-right: 8px;
+        }
+        
+        .station-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        
+        .station-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .station-header {
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 10px 10px 0 0;
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .station-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        .station-subtitle {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin: 8px 0 0 0;
+            line-height: 1.4;
+        }
+        
+        .station-body {
+            padding: 20px;
+        }
+        
+        .prix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .prix-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+        }
+        
+        .prix-card:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        
+        .prix-type {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .prix-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            display: flex;
+            align-items: baseline;
+        }
+        
+        .prix-value::after {
+            content: '€';
+            font-size: 0.8em;
+            margin-left: 2px;
+            color: #6c757d;
+        }
+        
+        .services {
+            background: #f1f3f4;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .services-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .service-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
+            color: #1565c0;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 3px;
+            border: 1px solid #bbdefb;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .service-tag:hover {
+            background: linear-gradient(135deg, #bbdefb 0%, #e3f2fd 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(21, 101, 192, 0.2);
+        }
+        
+        .horaires {
+            font-size: 0.9rem;
+            color: #495057;
+            padding: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+        
+        .horaires::before {
+            content: '🕐';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 1em;
+        }
+        
+        .horaires {
+            padding-left: 35px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 15px;
+            border: 2px dashed #dee2e6;
+            margin: 20px 0;
+        }
+        
+        .loading i {
+            font-size: 3rem;
+            animation: spin 1s linear infinite;
+            color: #667eea;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .loading p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+            border-radius: 15px;
+            border: 2px dashed #ffcc80;
+            margin: 20px 0;
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            color: #ff9800;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        /* Indicateurs de fraîcheur des données */
+        .data-fresh { 
+            color: #28a745;
+            font-weight: bold;
+        }
+        .data-old { 
+            color: #fd7e14;
+            font-weight: bold;
+        }
+        .data-stale { 
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        /* Couleurs pour les prix selon la fraîcheur */
+        .prix-card.fresh {
+            border-left: 4px solid #28a745;
+        }
+        .prix-card.fresh .prix-value {
+            color: #28a745;
+        }
+        
+        .prix-card.old {
+            border-left: 4px solid #fd7e14;
+        }
+        .prix-card.old .prix-value {
+            color: #fd7e14;
+        }
+        
+        .prix-card.stale {
+            border-left: 4px solid #dc3545;
+        }
+        .prix-card.stale .prix-value {
+            color: #dc3545;
+        }
+        
+        /* Dates colorées */
+        .date-fresh { color: #28a745; }
+        .date-old { color: #fd7e14; }
+        .date-stale { color: #dc3545; }
+        
+        .data-status {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        
+        .legend {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .legend h6 {
+            margin-bottom: 12px;
+            color: #495057;
+            font-weight: 600;
+        }
+        
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 8px;
+            border: 1px solid #ccc;
+        }
+        
+        .legend-fresh { background-color: #28a745; }
+        .legend-old { background-color: #fd7e14; }
+        .legend-stale { background-color: #dc3545; }
+        
+        /* Styles pour les liens Google Maps */
+        .station-title-link {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .station-title-link:hover {
+            color: #4285f4;
+            text-decoration: none;
+        }
+        
+        .station-title-link:hover .maps-icon {
+            transform: scale(1.2);
+            color: #4285f4;
+        }
+        
+        .maps-icon {
+            color: #34a853;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+        
+        .address-link {
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .address-link:hover {
+            color: #4285f4;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .search-container {
+                padding: 20px;
+            }
+            
+            .fuel-checkboxes {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .fuel-checkbox {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .prix-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 8px;
+            }
+            
+            .station-card {
+                margin-bottom: 15px;
+            }
+            
+            .station-header {
+                padding: 12px 15px;
+            }
+            
+            .station-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-gas-pump"></i> Prix des Carburants</h1>
+                <p class="lead">Trouvez les meilleures stations-service près de chez vous</p>
+            </div>
+
+            <!-- Zone de recherche -->
+            <div class="search-container">
+                <div class="row align-items-end">
+                    <div class="col-md-8">
+                        <label for="villeInput" class="form-label fw-bold">
+                            <i class="fas fa-map-marker-alt text-primary"></i> Rechercher une ville
+                        </label>
+                        <input type="text" 
+                               class="form-control search-input" 
+                               id="villeInput" 
+                               placeholder="Tapez le nom d'une ville (ex: Paris, Lyon, Marseille...)"
+                               onkeypress="if(event.key==='Enter') rechercherStations()">
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-primary btn-search w-100" onclick="rechercherStations()">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="#" class="advanced-toggle" onclick="toggleAdvancedSearch()">
+                        <i class="fas fa-cog"></i> Recherche avancée
+                    </a>
+                </div>
+                
+                <!-- Recherche avancée (masquée par défaut) -->
+                <div class="advanced-search" id="advancedSearch">
+                    <h6 class="mb-4 fw-bold text-primary">
+                        <i class="fas fa-sliders-h"></i> Options de filtrage
+                    </h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-sort text-primary"></i> Trier par :
+                            </label>
+                            <select class="form-select" id="triSelect" onchange="appliquerFiltres()">
+                                <option value="">Aucun tri</option>
+                                <option value="prix-croissant">Prix croissant</option>
+                                <option value="prix-decroissant">Prix décroissant</option>
+                                <option value="ville-az">Ville (A-Z)</option>
+                                <option value="marque-az">Marque (A-Z)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-road text-primary"></i> Type de station :
+                            </label>
+                            <select class="form-select" id="typeStationSelect" onchange="appliquerFiltres()">
+                                <option value="">Tous les types</option>
+                                <option value="Route">Route</option>
+                                <option value="Autoroute">Autoroute</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-clock text-primary"></i> Horaires :
+                            </label>
+                            <select class="form-select" id="horairesSelect" onchange="appliquerFiltres()">
+                                <option value="">Toutes les stations</option>
+                                <option value="24h">24h/24</option>
+                                <option value="ouvert">Ouvertes actuellement</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-gas-pump text-primary"></i> Carburants disponibles :
+                            </label>
+                            <div class="fuel-checkboxes mt-2">
+                                <div class="fuel-checkbox">
+                                    <input type="checkbox" class="form-check-input" id="fuelSP95" value="SP95" onchange="appliquerFiltres()">
+                                    <label class="form-check-label" for="fuelSP95">SP95</label>
+                                </div>
+                                <div class="fuel-checkbox">
+                                    <input type="checkbox" class="form-check-input" id="fuelSP98" value="SP98" onchange="appliquerFiltres()">
+                                    <label class="form-check-label" for="fuelSP98">SP98</label>
+                                </div>
+                                <div class="fuel-checkbox">
+                                    <input type="checkbox" class="form-check-input" id="fuelGazole" value="Gazole" onchange="appliquerFiltres()">
+                                    <label class="form-check-label" for="fuelGazole">Gazole</label>
+                                </div>
+                                <div class="fuel-checkbox">
+                                    <input type="checkbox" class="form-check-input" id="fuelE10" value="E10" onchange="appliquerFiltres()">
+                                    <label class="form-check-label" for="fuelE10">E10</label>
+                                </div>
+                                <div class="fuel-checkbox">
+                                    <input type="checkbox" class="form-check-input" id="fuelE85" value="E85" onchange="appliquerFiltres()">
+                                    <label class="form-check-label" for="fuelE85">E85</label>
+                                </div>
+                                <div class="fuel-checkbox">
+                                    <input type="checkbox" class="form-check-input" id="fuelGPL" value="GPL" onchange="appliquerFiltres()">
+                                    <label class="form-check-label" for="fuelGPL">GPL</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12 text-end">
+                            <button class="btn btn-outline-secondary me-2" onclick="reinitialiserFiltres()">
+                                <i class="fas fa-undo"></i> Réinitialiser
+                            </button>
+                            <button class="btn btn-primary" onclick="appliquerFiltres()">
+                                <i class="fas fa-filter"></i> Appliquer les filtres
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone de résultats -->
+            <div id="resultats"></div>
+            
+            <!-- Bouton refresh -->
+            <div class="text-center mb-4">
+                <button class="btn btn-refresh" onclick="actualiserDonnees()">
+                    <i class="fas fa-sync-alt"></i> Actualiser les données
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statut des données en bas -->
+    <div class="data-status" id="dataStatus">
+        <span id="statusText">Chargement des données...</span>
+    </div>
+
+    <script>
+        let stationsData = [];
+        let filteredStations = [];
+
+        // Vérification du statut au chargement
+        window.onload = function() {
+            verifierStatut();
+            setInterval(verifierStatut, 30000); // Vérifier toutes les 30 secondes
+        };
+
+        function verifierStatut() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    updateDataStatus(data);
+                })
+                .catch(error => {
+                    document.getElementById('statusText').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erreur de connexion';
+                });
+        }
+        
+        function updateDataStatus(data) {
+            const statusElement = document.getElementById('statusText');
+            const nbStations = data.nb_stations || 0;
+            const lastUpdate = data.last_update;
+            
+            let statusClass = 'data-fresh';
+            let ageText = '';
+            
+            if (lastUpdate) {
+                const updateTime = new Date(lastUpdate);
+                const now = new Date();
+                const diffHours = Math.floor((now - updateTime) / (1000 * 60 * 60));
+                
+                if (diffHours >= 168) { // 1 semaine
+                    statusClass = 'data-stale';
+                    ageText = ` (${Math.floor(diffHours / 24)} jours)`;
+                } else if (diffHours >= 24) { // 24 heures
+                    statusClass = 'data-old';
+                    ageText = ` (${diffHours}h)`;
+                } else {
+                    ageText = ` (${diffHours}h)`;
+                }
+            }
+            
+            statusElement.className = statusClass;
+            statusElement.innerHTML = `<i class="fas fa-database"></i> ${nbStations} stations chargées${ageText}`;
+        }
+
+        function toggleAdvancedSearch() {
+            const advanced = document.getElementById('advancedSearch');
+            const isVisible = advanced.style.display !== 'none';
+            advanced.style.display = isVisible ? 'none' : 'block';
+            
+            const toggle = document.querySelector('.advanced-toggle');
+            toggle.innerHTML = isVisible ? 
+                '<i class="fas fa-cog"></i> Recherche avancée' : 
+                '<i class="fas fa-cog"></i> Masquer la recherche avancée';
+        }
+
+        function rechercherStations() {
+            const ville = document.getElementById('villeInput').value.trim();
+            if (!ville) {
+                alert('Veuillez saisir le nom d\'une ville');
+                return;
+            }
+
+            document.getElementById('resultats').innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Recherche des stations-service dans "${ville}"...</p>
+                </div>
+            `;
+
+            fetch(`/api/search?ville=${encodeURIComponent(ville)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    stationsData = data.stations || [];
+                    filteredStations = [...stationsData];
+                    afficherResultats(data);
+                    appliquerFiltres(); // Appliquer les filtres existants
+                })
+                .catch(error => {
+                    document.getElementById('resultats').innerHTML = `
+                        <div class="error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Erreur lors de la recherche: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+
+        function afficherResultats(data) {
+            const resultatsDiv = document.getElementById('resultats');
+            const stations = filteredStations.length > 0 ? filteredStations : data.stations || [];
+            
+            if (stations.length === 0) {
+                resultatsDiv.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h5>Aucune station trouvée</h5>
+                        <p>Essayez avec une autre ville ou modifiez vos filtres</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="results-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>${stations.length}</strong> station(s) trouvée(s) dans <strong>${data.ville}</strong>
+                </div>
+                
+                <div class="legend">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <strong><i class="fas fa-palette"></i> Légende des couleurs :</strong>
+                            <div class="mt-2">
+                                <div class="legend-item">
+                                    <div class="legend-color legend-fresh"></div>
+                                    <span>Données récentes (< 24h)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color legend-old"></div>
+                                    <span>Données anciennes (24h - 1 semaine)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color legend-stale"></div>
+                                    <span>Données très anciennes (> 1 semaine)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <strong><i class="fas fa-info-circle"></i> Navigation :</strong>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-mouse-pointer"></i> Cliquez sur le nom ou l'adresse d'une station pour l'ouvrir dans Google Maps
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            stations.forEach(station => {
+                html += creerCarteStation(station);
+            });
+
+            resultatsDiv.innerHTML = html;
+        }
+
+        function getDataAge(dateString) {
+            // Parse la date depuis le format "09/09/2025 à 19:43"
+            if (!dateString || dateString === "Non renseigné") return 'stale';
+            
+            try {
+                // Extraction de la date depuis le format français
+                const match = dateString.match(/(\d{2})\/(\d{2})\/(\d{4}) à (\d{2}):(\d{2})/);
+                if (!match) return 'stale';
+                
+                const [, day, month, year, hour, minute] = match;
+                const updateDate = new Date(year, month - 1, day, hour, minute);
+                const now = new Date();
+                const diffHours = Math.floor((now - updateDate) / (1000 * 60 * 60));
+                
+                if (diffHours < 24) return 'fresh';
+                if (diffHours < 168) return 'old'; // 7 jours = 168 heures
+                return 'stale';
+            } catch (e) {
+                return 'stale';
+            }
+        }
+
+        function generateGoogleMapsUrl(station) {
+            // Construire la requête de recherche pour Google Maps
+            const marque = station.marque || 'Station-service';
+            const adresse = station.adresse || '';
+            const ville = station.ville || '';
+            const cp = station.cp || '';
+            
+            // Nettoyer et formater l'adresse
+            const adresseComplete = `${adresse}, ${cp} ${ville}, France`.replace(/,\s*,/g, ',').trim();
+            
+            let searchQuery = '';
+            
+            // Convertir les coordonnées du format gouvernemental au format décimal
+            if (station.latitude && station.longitude) {
+                try {
+                    // Les coordonnées sont stockées au format DDMMSS (degrés, minutes, secondes * 100)
+                    const latRaw = parseInt(station.latitude);
+                    const lngRaw = parseInt(station.longitude);
+                    
+                    if (!isNaN(latRaw) && !isNaN(lngRaw) && latRaw > 0 && lngRaw > 0) {
+                        // Conversion DDMMSS vers degrés décimaux
+                        const lat = latRaw / 100000; // Diviser par 100000 pour obtenir les coordonnées correctes
+                        const lng = lngRaw / 100000;
+                        
+                        // Vérifier que les coordonnées sont dans une plage raisonnable pour la France
+                        if (lat >= 41 && lat <= 51 && lng >= -5 && lng <= 10) {
+                            return `https://www.google.com/maps/place/${lat},${lng}/@${lat},${lng},15z`;
+                        }
+                    }
+                } catch (e) {
+                    console.log('Erreur conversion coordonnées:', e);
+                }
+            }
+            
+            // Fallback : recherche textuelle optimisée
+            if (marque && marque !== 'Station-service' && marque.trim() !== '') {
+                searchQuery = `${marque} ${adresseComplete}`;
+            } else {
+                searchQuery = `station essence ${adresseComplete}`;
+            }
+            
+            // Encoder l'URL pour Google Maps
+            const encodedQuery = encodeURIComponent(searchQuery);
+            return `https://www.google.com/maps/search/${encodedQuery}`;
+        }
+
+        function openGoogleMaps(station) {
+            const url = generateGoogleMapsUrl(station);
+            console.log('Opening Google Maps with URL:', url);
+            console.log('Station data:', station);
+            
+            // Ouvrir Google Maps
+            const newWindow = window.open(url, '_blank');
+            
+            // Si l'ouverture échoue (bloqueur de popup), proposer une alternative
+            if (!newWindow) {
+                const fallbackUrl = `https://www.google.com/maps/search/station-service+${encodeURIComponent(station.adresse + ' ' + station.ville)}`;
+                if (confirm('Les popups semblent bloquées. Voulez-vous ouvrir Google Maps dans cet onglet ?')) {
+                    window.location.href = fallbackUrl;
+                }
+            }
+        }
+
+        function openGoogleMapsDirections(station) {
+            // Alternative : ouvrir les directions vers la station
+            const adresse = `${station.adresse}, ${station.cp} ${station.ville}, France`;
+            const url = `https://www.google.com/maps/dir//${encodeURIComponent(adresse)}`;
+            window.open(url, '_blank');
+        }
+
+        function formatNomStation(marque, adresse) {
+            // Améliorer l'affichage du nom de la station
+            if (!marque || marque === 'Station-service') {
+                // Si pas de marque spécifique, essayer d'extraire depuis l'adresse
+                if (adresse) {
+                    const motsAdresse = adresse.split(' ');
+                    const premierMot = motsAdresse[0];
+                    
+                    // Si le premier mot semble être un nom de marque
+                    if (premierMot && premierMot.length > 3 && 
+                        !['ROUTE', 'RUE', 'AVENUE', 'PLACE', 'BOULEVARD'].includes(premierMot.toUpperCase())) {
+                        return premierMot.charAt(0).toUpperCase() + premierMot.slice(1).toLowerCase();
+                    }
+                }
+                return 'Station-service';
+            }
+            
+            // Capitaliser correctement le nom de la marque
+            if (marque.includes(' ')) {
+                return marque.split(' ').map(mot => 
+                    mot.charAt(0).toUpperCase() + mot.slice(1).toLowerCase()
+                ).join(' ');
+            }
+            
+            return marque.charAt(0).toUpperCase() + marque.slice(1).toLowerCase();
+        }
+
+        function creerCarteStation(station) {
+            const marqueRaw = station.marque || 'Station-service';
+            const adresse = station.adresse || 'Adresse non disponible';
+            const ville = station.ville || '';
+            const cp = station.cp || '';
+            
+            // Améliorer le nom d'affichage
+            const nomStation = formatNomStation(marqueRaw, adresse);
+            
+            // Générer l'ID unique pour la station
+            const stationId = `station_${station.id || Math.random().toString(36).substr(2, 9)}`;
+            
+            let prixHtml = '';
+            if (station.prix && station.prix.length > 0) {
+                prixHtml = '<div class="prix-grid">';
+                station.prix.forEach(prix => {
+                    const ageClass = getDataAge(prix.maj);
+                    const dateClass = `date-${ageClass}`;
+                    
+                    prixHtml += `
+                        <div class="prix-card ${ageClass}">
+                            <div class="prix-type">${prix.nom}</div>
+                            <div class="prix-value">${prix.valeur}€</div>
+                            <small class="${dateClass}">${prix.maj}</small>
+                        </div>
+                    `;
+                });
+                prixHtml += '</div>';
+            } else {
+                prixHtml = '<p class="text-muted">Prix non disponibles</p>';
+            }
+
+            let servicesHtml = '';
+            if (station.services && station.services.length > 0) {
+                servicesHtml = `
+                    <div class="services">
+                        <div class="services-title"><i class="fas fa-tools"></i> Services disponibles</div>
+                `;
+                station.services.forEach(service => {
+                    servicesHtml += `<span class="service-tag">${service}</span>`;
+                });
+                servicesHtml += '</div>';
+            }
+
+            const horaires = station.horaires || 'Horaires non disponibles';
+            
+            // Stocker les données de la station pour la fonction onclick
+            const stationDataJson = JSON.stringify(station).replace(/"/g, '&quot;');
+
+            return `
+                <div class="station-card" id="${stationId}">
+                    <div class="station-header">
+                        <h3 class="station-title">
+                            <a href="#" class="station-title-link" onclick="openGoogleMaps(${stationDataJson}); return false;" title="Ouvrir dans Google Maps">
+                                <i class="fas fa-gas-pump"></i> 
+                                ${nomStation}
+                                <i class="fas fa-external-link-alt maps-icon"></i>
+                            </a>
+                        </h3>
+                        <p class="station-subtitle">
+                            <i class="fas fa-map-marker-alt"></i> 
+                            <a href="#" class="address-link" onclick="openGoogleMaps(${stationDataJson}); return false;" title="Voir sur Google Maps">
+                                ${adresse}, ${cp} ${ville}
+                            </a>
+                            ${station.type ? `<span class="badge bg-secondary ms-2">${station.type}</span>` : ''}
+                            ${station.automate_24h ? `<span class="badge bg-success ms-1">24h/24</span>` : ''}
+                        </p>
+                    </div>
+                    <div class="station-body">
+                        ${prixHtml}
+                        ${servicesHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function appliquerFiltres() {
+            if (stationsData.length === 0) return;
+
+            let stations = [...stationsData];
+            
+            // Filtrer par type de station
+            const typeStation = document.getElementById('typeStationSelect').value;
+            if (typeStation) {
+                stations = stations.filter(station => 
+                    (station.type || '').toLowerCase().includes(typeStation.toLowerCase())
+                );
+            }
+            
+            // Filtrer par horaires
+            const horaires = document.getElementById('horairesSelect').value;
+            if (horaires === '24h') {
+                stations = stations.filter(station => 
+                    (station.horaires || '').toLowerCase().includes('24') ||
+                    (station.horaires || '').toLowerCase().includes('jour et nuit')
+                );
+            } else if (horaires === 'ouvert') {
+                // Logique simplifiée pour les stations ouvertes
+                const now = new Date();
+                const currentHour = now.getHours();
+                stations = stations.filter(station => {
+                    const horairesText = (station.horaires || '').toLowerCase();
+                    return horairesText.includes('24') || 
+                           horairesText.includes('jour et nuit') ||
+                           currentHour >= 6 && currentHour <= 22; // Approximation
+                });
+            }
+            
+            // Filtrer par carburants (sélection multiple)
+            const selectedFuels = [];
+            document.querySelectorAll('.fuel-checkbox input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedFuels.push(checkbox.value);
+            });
+            
+            if (selectedFuels.length > 0) {
+                stations = stations.filter(station => {
+                    if (!station.prix || station.prix.length === 0) return false;
+                    return selectedFuels.some(fuel => 
+                        station.prix.some(prix => prix.nom.includes(fuel))
+                    );
+                });
+            }
+            
+            // Appliquer le tri
+            const tri = document.getElementById('triSelect').value;
+            if (tri === 'prix-croissant') {
+                stations.sort((a, b) => {
+                    const prixA = getPrixMoyen(a);
+                    const prixB = getPrixMoyen(b);
+                    return prixA - prixB;
+                });
+            } else if (tri === 'prix-decroissant') {
+                stations.sort((a, b) => {
+                    const prixA = getPrixMoyen(a);
+                    const prixB = getPrixMoyen(b);
+                    return prixB - prixA;
+                });
+            } else if (tri === 'ville-az') {
+                stations.sort((a, b) => (a.ville || '').localeCompare(b.ville || ''));
+            } else if (tri === 'marque-az') {
+                stations.sort((a, b) => (a.marque || '').localeCompare(b.marque || ''));
+            }
+            
+            filteredStations = stations;
+            
+            // Réafficher les résultats
+            const ville = document.getElementById('villeInput').value.trim();
+            afficherResultats({ stations: filteredStations, ville: ville });
+        }
+        
+        function getPrixMoyen(station) {
+            if (!station.prix || station.prix.length === 0) return Infinity;
+            const total = station.prix.reduce((sum, prix) => sum + parseFloat(prix.valeur || 0), 0);
+            return total / station.prix.length;
+        }
+
+        function reinitialiserFiltres() {
+            document.getElementById('triSelect').value = '';
+            document.getElementById('typeStationSelect').value = '';
+            document.getElementById('horairesSelect').value = '';
+            
+            // Décocher toutes les cases carburants
+            document.querySelectorAll('.fuel-checkbox input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Réappliquer les filtres (qui seront vides)
+            appliquerFiltres();
+        }
+
+        function actualiserDonnees() {
+            const statusElement = document.getElementById('statusText');
+            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualisation en cours...';
+            
+            fetch('/api/refresh')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        verifierStatut();
+                        // Relancer la recherche si une ville est saisie
+                        const ville = document.getElementById('villeInput').value.trim();
+                        if (ville) {
+                            rechercherStations();
+                        }
+                    } else {
+                        throw new Error(data.error || 'Erreur lors de l\'actualisation');
+                    }
+                })
+                .catch(error => {
+                    statusElement.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Erreur: ${error.message}`;
+                });
+        }
+    </script>
+</body>
+</html>
